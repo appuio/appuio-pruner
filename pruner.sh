@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 while true; do
   echo "Pruning old deployments"
@@ -9,9 +9,16 @@ while true; do
   oc adm prune builds --orphans --confirm
   echo
 
-  echo "Pruning old images from registry"
-  oc adm prune images --confirm
+  # Only prune images at 3:15 in the morning to prevent
+  # triggering bug deleting blobs which are pushed during prune.
+  if [ $(date +%H) -eq 3 ]; then
+    echo "Pruning old images from registry"
+    oc adm prune images --confirm
+    echo
+  fi
+
   echo
 
-  sleep 3600
+  # Wait till it's 15 past for the next time
+  sleep $(( ( 75 - $(date +%M) ) % 60 ))m
 done
