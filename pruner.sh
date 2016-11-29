@@ -1,6 +1,9 @@
 #!/bin/bash
 
 while true; do
+  date
+  echo
+
   echo "Pruning old deployments"
   oc adm prune deployments --orphans --confirm
   echo
@@ -17,7 +20,7 @@ while true; do
     echo
   fi
 
-  echo
+  echo "----------------------------------------"
 
   # Wait till it's 15 past for the next time
   sleep $(( ( 75 - $(date +%M) ) % 60 ))m
