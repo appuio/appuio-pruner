@@ -1,0 +1,175 @@
+{
+  "kind": "Template",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "pruner"
+  },
+  "objects": [
+    {
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "rhel7"         
+      },
+      "spec": {
+        "tags": [
+          {
+            "name": "latest",
+            "annotations": {
+              "openshift.io/imported-from": "registry.access.redhat.com/rhel7:latest"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.access.redhat.com/rhel7:latest"
+            }        
+          }
+        ],
+        "dockerImageRepository": "registry.access.redhat.com/rhel7:latest"
+      },
+      "status": {
+        "dockerImageRepository": ""
+      }
+    },
+    {
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "appuio-pruner",
+        "creationTimestamp": null
+      },
+      "spec": {
+        "dockerImageRepository": null
+      },
+      "status": {
+        "dockerImageRepository": ""
+      }
+    },
+    {
+      "kind": "BuildConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "appuio-pruner",
+        "creationTimestamp": null                
+      },
+      "spec": {
+        "triggers": [
+          {
+            "type": "ConfigChange"
+          },
+          {
+            "type": "ImageChange",
+            "imageChange": {
+              "from": {
+                "kind": "ImageStreamTag",
+                "name": "rhel7:latest"                
+              }
+            }
+          }
+        ],
+        "source": {
+          "type": "Git",
+          "git": {
+            "uri": "https://github.com/appuio/appuio-pruner",
+            "ref": "${PRUNER_VERSION}"
+          },
+          "secrets": []
+        },
+        "strategy": {
+          "type": "Docker",
+          "dockerStrategy": {
+            "from": {
+              "kind": "ImageStreamTag",
+              "name": "rhel7:latest"
+            }
+          }
+        },
+        "output": {
+          "to": {
+            "kind": "ImageStreamTag",
+            "name": "appuio-pruner:latest"
+          }
+        },
+        "resources": {},
+        "postCommit": {}
+      },
+      "status": {
+        "lastVersion": 0
+      }
+    },
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "appuio-pruner",
+        "creationTimestamp": null                
+      },
+      "spec": {
+        "strategy": {
+          "resources": {}
+        },
+        "triggers": [
+          {
+            "type": "ConfigChange"
+          },
+          {
+            "type": "ImageChange",
+            "imageChangeParams": {
+              "automatic": true,
+              "containerNames": [
+                "appuio-pruner"
+              ],
+              "from": {
+                "kind": "ImageStreamTag",
+                "name": "appuio-pruner:latest"
+              }
+            }
+          }
+        ],
+        "replicas": 1,
+        "test": false,
+        "selector": {          
+          "deploymentconfig": "appuio-pruner"
+        },
+        "template": {
+          "metadata": {
+            "creationTimestamp": null,
+            "labels": {              
+              "deploymentconfig": "appuio-pruner"
+            },
+            "annotations": {
+              "openshift.io/container.appuio-pruner.image.entrypoint": "[\"/bin/bash\"]"              
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "name": "appuio-pruner",
+                "image": "appuio-pruner:latest",
+                "env": [
+                  {
+                    "name": "TZ",
+                    "value": "${TIMEZONE}"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "status": {}
+    }
+  ],
+  "parameters": [
+    {
+      "description": "APPUiO Pruner Version, i.e. git ref of https://github.com/appuio/appuio-pruner",
+      "name": "PRUNER_VERSION",      
+      "required": true
+    },    
+    {
+      "description": "Timezone (TZ) of the container, see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for a list",
+      "name": "TIMEZONE",
+      "value": "UTC",      
+      "required": true
+    }
+  ]
+}
