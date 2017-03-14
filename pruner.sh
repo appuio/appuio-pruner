@@ -23,5 +23,5 @@ while true; do
   echo "----------------------------------------"
 
   # Wait till it's 15 past for the next time
-  sleep $(( ( 75 - $(date +%M) ) % 60 ))m
+  sleep $(( ( 75 - $(date +%-M) ) % 60 ))m
 done
