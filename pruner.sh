@@ -23,5 +23,8 @@ while true; do
   echo "----------------------------------------"
 
   # Wait till it's 15 past for the next time
-  sleep $(( ( 75 - $(date +%-M) ) % 60 ))m
+  SLEEP_MINUTES=$(( ( 75 - $(date +%-M) ) % 60 ))
+  if [ ${SLEEP_MINUTES} -eq 0 ]; then SLEEP_MINUTES=60; fi
+  sleep ${SLEEP_MINUTES}m
 done
+
