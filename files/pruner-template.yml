@@ -43,7 +43,7 @@ objects:
       source:
         type: Git
         git:
-          uri: 'https://github.com/appuio/appuio-pruner'
+          uri: '${PRUNER_SOURCE}'
           ref: '${PRUNER_VERSION}'
         secrets: []
       strategy:
@@ -98,8 +98,13 @@ objects:
                   value: '${TIMEZONE}'
     status: {}
 parameters:
-  - description: 'APPUiO Pruner Version, i.e. git ref of https://github.com/appuio/appuio-pruner'
+  - description: 'APPUiO pruner Git repository'
+    name: PRUNER_SOURCE
+    value: https://github.com/appuio/appuio-pruner.git
+    required: true
+  - description: 'APPUiO pruner version, i.e. git ref of the specified repository'
     name: PRUNER_VERSION
+    value: master
     required: true
   - description: 'Timezone (TZ) of the container, see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for a list'
     name: TIMEZONE

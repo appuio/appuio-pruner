@@ -9,12 +9,13 @@
     template: "{{ role_path }}/files/pruner-template.yml"
     app_name: appuio-pruner
     arguments:
-      PRUNER_VERSION: "{{ appuio_pruner_version | default('master') }}"
+      PRUNER_SOURCE: "{{ role_src | default('https://github.com/appuio/appuio-pruner.git') }}"
+      PRUNER_VERSION: "{{ role_version | default('master') }}"
       TIMEZONE: "{{ appuio_container_timezone | default('UTC') }}"
 
 - name: Configure permissions for pruner service account
   openshift_policy:
     cluster_roles:
       - edit
-      - system:image-pruner      
+      - system:image-pruner
     users: system:serviceaccount:appuio-infra:default
