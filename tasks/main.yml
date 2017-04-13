@@ -1,4 +1,6 @@
 ---
+- debug: msg="{{ testvar }}"
+
 - name: Create appuio-infra project
   openshift_project:
     name: appuio-infra
