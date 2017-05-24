@@ -14,6 +14,8 @@ while true; do
 
   # Only prune images at 3:15 in the morning to prevent
   # triggering bug deleting blobs which are pushed during prune.
+  #
+  # https://bugzilla.redhat.com/show_bug.cgi?id=1408676
   if [ $(date +%H) -eq 3 ]; then
     echo "Pruning old images from registry"
     oc adm prune images --confirm
