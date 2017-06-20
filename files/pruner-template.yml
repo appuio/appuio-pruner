@@ -95,7 +95,9 @@ objects:
               image: 'appuio-pruner:latest'
               env:
                 - name: TZ
-                  value: '${TIMEZONE}'
+                  value: ${TIMEZONE}
+                - name: OC_URL
+                  value: ${OC_URL}
     status: {}
 parameters:
   - description: 'APPUiO pruner Git repository'
@@ -110,3 +112,7 @@ parameters:
     name: TIMEZONE
     value: UTC
     required: true
+  - description: 'URL of oc client'
+    value: https://console.appuio.ch/console/extensions/clients/linux/oc
+    required: true
+ 
