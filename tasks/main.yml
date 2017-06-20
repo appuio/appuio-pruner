@@ -12,6 +12,7 @@
       PRUNER_SOURCE: "{{ role_src | default('https://github.com/appuio/appuio-pruner.git') }}"
       PRUNER_VERSION: "{{ role_version | default('master') }}"
       TIMEZONE: "{{ appuio_container_timezone | default('UTC') }}"
+      OC_URL: "{{ oc_url | default('https://console.appuio.ch/console/extensions/clients/linux/oc') }}"
 
 - name: Configure permissions for pruner service account
   openshift_policy:

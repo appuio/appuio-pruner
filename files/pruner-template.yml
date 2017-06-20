@@ -52,6 +52,9 @@ objects:
           from:
             kind: ImageStreamTag
             name: 'rhel7:latest'
+          env:
+          - name: OC_URL
+            value: ${OC_URL}
       output:
         to:
           kind: ImageStreamTag
@@ -95,8 +98,8 @@ objects:
               image: 'appuio-pruner:latest'
               env:
                 - name: TZ
-                  value: '${TIMEZONE}'
-    status: {}
+                  value: ${TIMEZONE}
+       status: {}
 parameters:
   - description: 'APPUiO pruner Git repository'
     name: PRUNER_SOURCE
@@ -110,3 +113,8 @@ parameters:
     name: TIMEZONE
     value: UTC
     required: true
+  - description: 'URL of oc client'
+    name: OC_URL
+    value: https://console.appuio.ch/console/extensions/clients/linux/oc
+    required: true
+ 
