@@ -11,6 +11,7 @@
     arguments:
       PRUNER_SOURCE: "{{ role_src | default('https://github.com/appuio/appuio-pruner.git') }}"
       PRUNER_VERSION: "{{ role_version | default('master') }}"
+      BASE_IMAGE: "{{ ((deployment_type | default(openshift_deployment_type) | default('openshift-enterprise')) == 'origin') | ternary('centos:7', 'registry.access.redhat.com/rhel7') }}"
       TIMEZONE: "{{ appuio_container_timezone | default('UTC') }}"
       OC_URL: "{{ oc_url | default('https://console.appuio.ch/console/extensions/clients/linux/oc') }}"
 

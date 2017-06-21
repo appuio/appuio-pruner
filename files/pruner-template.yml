@@ -6,18 +6,15 @@ objects:
   - kind: ImageStream
     apiVersion: v1
     metadata:
-      name: rhel7
+      name: appuio-pruner-base
     spec:
       tags:
         - name: latest
-          annotations:
-            openshift.io/imported-from: 'registry.access.redhat.com/rhel7:latest'
           from:
             kind: DockerImage
-            name: 'registry.access.redhat.com/rhel7:latest'
-      dockerImageRepository: 'registry.access.redhat.com/rhel7:latest'
-    status:
-      dockerImageRepository: ''
+            name: ${BASE_IMAGE}
+          importPolicy:
+            scheduled: true
   - kind: ImageStream
     apiVersion: v1
     metadata:
@@ -36,10 +33,7 @@ objects:
       triggers:
         - type: ConfigChange
         - type: ImageChange
-          imageChange:
-            from:
-              kind: ImageStreamTag
-              name: 'rhel7:latest'
+          imageChange: {}
       source:
         type: Git
         git:
@@ -51,7 +45,7 @@ objects:
         dockerStrategy:
           from:
             kind: ImageStreamTag
-            name: 'rhel7:latest'
+            name: appuio-pruner-base:latest
           env:
           - name: OC_URL
             value: ${OC_URL}
@@ -99,7 +93,6 @@ objects:
               env:
                 - name: TZ
                   value: ${TIMEZONE}
-       status: {}
 parameters:
   - description: 'APPUiO pruner Git repository'
     name: PRUNER_SOURCE
@@ -109,6 +102,10 @@ parameters:
     name: PRUNER_VERSION
     value: master
     required: true
+  - description: Base image for pruner, registry.access.redhat.com/rhel7 or centos:7, defaults to the former
+    name: BASE_IMAGE
+    required: true
+    value: registry.access.redhat.com/rhel7
   - description: 'Timezone (TZ) of the container, see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for a list'
     name: TIMEZONE
     value: UTC
@@ -117,4 +114,3 @@ parameters:
     name: OC_URL
     value: https://console.appuio.ch/console/extensions/clients/linux/oc
     required: true
- 
