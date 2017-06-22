@@ -22,6 +22,10 @@ while true; do
     echo
   fi
 
+  export JOBS_NUMBER_TO_KEEP=3
+  echo "Cleaning up jobs"
+  python /tmp/jobs-cleaner.py
+
   echo "----------------------------------------"
 
   # Wait till it's 15 past for the next time

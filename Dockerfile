@@ -7,6 +7,9 @@ RUN cd /usr/local/bin && \
     curl -k -O ${OC_URL:-https://console.appuio.ch/console/extensions/clients/linux/oc} && \
     chmod 755 oc
 
+ENV HOME /tmp/
+
 COPY pruner.sh /tmp/
+COPY jobs-cleaner.py /tmp/
 
 ENTRYPOINT ["/tmp/pruner.sh"]
