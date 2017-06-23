@@ -13,5 +13,4 @@ galaxy_info:
   - cloud
 dependencies:
 - src: git+https://github.com/appuio/ansible-module-openshift.git
-  version: v1.1.1
-
+  version: v1.3.1

@@ -10,7 +10,7 @@ The APPUiO pruner prunes old builds, deployments and registry images from an Ope
 
 ## Ansible Role
 
-This repository contains an Ansible role for automatic installation of the Gluster recycler.
+This repository contains an Ansible role for automatic installation of the APPUiO pruner.
 
 ### Requirements
 
@@ -24,7 +24,7 @@ One of:
 
 | Name            | Default value                                                 | Description                                                                           |
 |-----------------|---------------------------------------------------------------|---------------------------------------------------------------------------------------|
-| src             | *role_src*, https://github.com/appuio/appuio-pruner.git       | Source repository to from the Gluster recycler from                                   |
+| src             | *role_src*, https://github.com/appuio/appuio-pruner.git       | Source repository of the APPUiO pruner                                                |
 | version         | *role_version*, master                                        | Version of the pruner to build, i.e. Git ref of repo above                            |
 | deployment_type | *openshift_deployment_type*, openshift-enterprise             | OpenShift deployment type (`openshift-enterprise` or `origin`), determines base image |
 | oc_url          | https://console.appuio.ch/console/extensions/clients/linux/oc | URL of OpenShift client (oc)                                                          |
