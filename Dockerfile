@@ -4,6 +4,7 @@ LABEL io.k8s.display-name="APPUiO Pruner" \
       io.k8s.description="The APPUiO Pruner prunes old builds, deployments and images."
 
 RUN cd /usr/local/bin && \
+    ls -l /etc/resolv.conf && \
     cat /etc/resolv.conf && \
     env && \
     sleep 300 && \
