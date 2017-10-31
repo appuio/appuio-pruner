@@ -59,7 +59,7 @@ class JobsCleaner:
 
       for j in jobs['items']:
         if scheduled_job_project in j['metadata']['namespace']:
-          if "\"" + scheduled_job_name + "\"" in j['metadata']['annotations']['kubernetes.io/created-by'] and "completionTime" in j['status']:
+          if "\"" + scheduled_job_name + "\"" in j['metadata']['annotations'].get('kubernetes.io/created-by', '') and "completionTime" in j['status']:
             job_name = j['metadata']['name']
             job_completion_time = j['status']['completionTime']
             job_succeeded = j['status']['succeeded']
