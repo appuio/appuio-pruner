@@ -19,6 +19,11 @@ while true; do
   if [ $(date +%H) -eq 3 ]; then
     echo "Pruning old images from registry"
     oc adm prune images --confirm
+    ## If it fails, try to prune from insecure Registry
+    if [ $? -eq 1 ]; then
+      echo "Pruning old images from insecure registry"
+      oc adm prune images --confirm --force-insecure
+    fi
     echo
   fi
 
