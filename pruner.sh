@@ -18,7 +18,7 @@ while true; do
   # https://bugzilla.redhat.com/show_bug.cgi?id=1408676
   if [ $(date +%H) -eq 3 ]; then
     # Check if insecure registry variable is set
-    if [ $INSECURE_REGISTRY ]; then
+    if [ "$INSECURE_REGISTRY" = true ]; then
       echo "Pruning old images from insecure registry"
       oc adm prune images --confirm --force-insecure
     else
