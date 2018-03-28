@@ -5,6 +5,13 @@ The APPUiO pruner prunes old builds, deployments and registry images from an Ope
 
     oc new-project appuio-infra
     oc new-app https://github.com/appuio/appuio-pruner
+
+If you are running an insecure registry, you need to specify the following environment variable:
+
+    oc new-app https://github.com/appuio/appuio-pruner -e INSECURE_REGISTRY=true
+
+Give APPUiO Service Account the required permissions:
+
     oc adm policy add-cluster-role-to-user edit system:serviceaccount:appuio-infra:default
     oc adm policy add-cluster-role-to-user system:image-pruner system:serviceaccount:appuio-infra:default
 
