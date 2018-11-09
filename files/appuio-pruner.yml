@@ -1,0 +1,193 @@
+---
+kind: Template
+apiVersion: v1
+metadata:
+  name: appuio-pruner
+  annotations:
+    description: Install the APPUiO Pruner
+    version: '2.0.0'
+
+parameters:
+  - description: Namespace the template is being deployed into
+    name: NAMESPACE
+    required: true
+
+  - description: Image to use for the pruner jobs
+    name: IMAGE
+    required: true
+
+  - description: Schedule to use for the cronjobs
+    name: SCHEDULE
+    value: "@hourly"
+
+objects:
+
+  - apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: pruner
+
+  - apiVersion: authorization.openshift.io/v1
+    kind: ClusterRole
+    metadata:
+      annotations:
+        openshift.io/reconcile-protect: "true"
+      labels:
+        app: appuio-pruner
+      name: appuio-pruner
+    rules:
+      - apiGroups:
+          - build.openshift.io
+        resources:
+          - buildconfigs
+        verbs:
+          - list
+      - apiGroups:
+          - build.openshift.io
+        resources:
+          - builds
+        verbs:
+          - list
+          - delete
+      - apiGroups:
+          - apps.openshift.io
+        resources:
+          - deploymentconfigs
+        verbs:
+          - list
+      - apiGroups: []
+        resources:
+          - replicationcontrollers
+        verbs:
+          - list
+          - delete
+
+  - apiVersion: authorization.openshift.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: appuio-pruner
+    roleRef:
+      name: appuio-pruner
+    subjects:
+      - kind: ServiceAccount
+        name: pruner
+        namespace: ${NAMESPACE}
+    userNames:
+      - 'system:serviceaccount:${NAMESPACE}:pruner'
+
+  - apiVersion: authorization.openshift.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: appuio-image-pruner
+    roleRef:
+      name: system:image-pruner
+    subjects:
+      - kind: ServiceAccount
+        name: pruner
+        namespace: ${NAMESPACE}
+    userNames:
+      - 'system:serviceaccount:${NAMESPACE}:pruner'
+
+  - apiVersion: batch/v1beta1
+    kind: CronJob
+    metadata:
+      name: prune-builds
+    spec:
+      schedule: ${SCHEDULE}
+      failedJobsHistoryLimit: 3
+      successfulJobsHistoryLimit: 3
+      concurrencyPolicy: Forbid
+      startingDeadlineSeconds: 86400
+      jobTemplate:
+        spec:
+          activeDeadlineSeconds: 7200
+          completions: 1
+          # Don't retry failed executions
+          backoffLimit: 0
+          template:
+            metadata:
+              labels:
+                name: prune-builds
+            spec:
+              containers:
+                - name: pruner
+                  image: ${IMAGE}
+                  imagePullPolicy: IfNotPresent
+                  args:
+                    - /usr/bin/oc
+                    - adm
+                    - prune
+                    - builds
+                    - --orphans
+                    - --confirm
+              serviceAccountName: pruner
+              restartPolicy: Never
+
+  - apiVersion: batch/v1beta1
+    kind: CronJob
+    metadata:
+      name: prune-deployments
+    spec:
+      schedule: ${SCHEDULE}
+      failedJobsHistoryLimit: 3
+      successfulJobsHistoryLimit: 3
+      concurrencyPolicy: Forbid
+      startingDeadlineSeconds: 86400
+      jobTemplate:
+        spec:
+          activeDeadlineSeconds: 7200
+          completions: 1
+          # Don't retry failed executions
+          backoffLimit: 0
+          template:
+            metadata:
+              labels:
+                name: prune-deployments
+            spec:
+              containers:
+                - name: pruner
+                  image: ${IMAGE}
+                  imagePullPolicy: IfNotPresent
+                  args:
+                    - /usr/bin/oc
+                    - adm
+                    - prune
+                    - deployments
+                    - --orphans
+                    - --confirm
+              serviceAccountName: pruner
+              restartPolicy: Never
+
+  - apiVersion: batch/v1beta1
+    kind: CronJob
+    metadata:
+      name: prune-images
+    spec:
+      schedule: ${SCHEDULE}
+      failedJobsHistoryLimit: 3
+      successfulJobsHistoryLimit: 3
+      concurrencyPolicy: Forbid
+      startingDeadlineSeconds: 86400
+      jobTemplate:
+        spec:
+          activeDeadlineSeconds: 7200
+          completions: 1
+          # Don't retry failed executions
+          backoffLimit: 0
+          template:
+            metadata:
+              labels:
+                name: prune-deployments
+            spec:
+              containers:
+                - name: pruner
+                  image: ${IMAGE}
+                  imagePullPolicy: IfNotPresent
+                  args:
+                    - /usr/bin/oc
+                    - adm
+                    - prune
+                    - images
+                    - --confirm
+              serviceAccountName: pruner
+              restartPolicy: Never

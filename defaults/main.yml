@@ -1,3 +1,4 @@
 ---
-namespace: appuio-infra
-openshift_deployment_type: openshift-enterprise
+appuio_pruner_namespace: appuio-infra
+appuio_pruner_image: "docker.io/appuio/oc:{{ openshift_release }}"
+appuio_pruner_schedule: "@hourly"
