@@ -1,0 +1,32 @@
+---
+- name: Create temp directory for doing work in
+  tempfile:
+    state: directory
+  register: tempdir
+  changed_when: false
+
+- vars:
+    r_template: "{{ tempdir.path }}/appuio-pruner.yml"
+  block:
+    - name: Copy template
+      copy:
+        src: appuio-pruner.yml
+        dest: "{{ r_template }}"
+      changed_when: false
+
+    - name: Apply pruner template
+      openshift_resource:
+        namespace: "{{ appuio_pruner_namespace }}"
+        template: "{{ r_template }}"
+        app_name: appuio-pruner
+        arguments:
+          NAMESPACE: "{{ appuio_pruner_namespace }}"
+          IMAGE: "{{ appuio_pruner_image }}"
+          SCHEDULE: "{{ appuio_pruner_schedule }}"
+
+  always:
+    - name: Delete temp directory
+      file:
+        path: "{{ tempdir.path }}"
+        state: absent
+      changed_when: false

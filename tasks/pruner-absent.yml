@@ -1,0 +1,15 @@
+---
+- name: Remove the APPUiO Pruner
+  vars:
+    kinds:
+      - CronJob
+      - ServiceAccount
+      - ClusterRoleBinding
+      - ClusterRole
+  command: >-
+    oc -n {{ appuio_pruner_namespace | quote }}
+    delete {{ kinds | join(',') | quote }}
+    --ignore-not-found
+    --selector app=appuio-pruner
+  register: r_uninstall
+  changed_when: r_uninstall.stdout != "No resources found"

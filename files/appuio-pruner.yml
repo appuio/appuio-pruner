@@ -26,6 +26,8 @@ objects:
     kind: ServiceAccount
     metadata:
       name: pruner
+      labels:
+        app: appuio-pruner
 
   - apiVersion: authorization.openshift.io/v1
     kind: ClusterRole
@@ -66,6 +68,8 @@ objects:
     kind: ClusterRoleBinding
     metadata:
       name: appuio-pruner
+      labels:
+        app: appuio-pruner
     roleRef:
       name: appuio-pruner
     subjects:
@@ -79,6 +83,8 @@ objects:
     kind: ClusterRoleBinding
     metadata:
       name: appuio-image-pruner
+      labels:
+        app: appuio-pruner
     roleRef:
       name: system:image-pruner
     subjects:
