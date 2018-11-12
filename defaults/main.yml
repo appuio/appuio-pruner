@@ -1,5 +1,5 @@
 ---
-appuio_pruner_namespace: appuio-infra
+appuio_pruner_namespace: appuio-pruner
 appuio_pruner_image: "docker.io/appuio/oc:{{ openshift_release }}"
 appuio_pruner_schedule: "@hourly"
 appuio_pruner_state: present
