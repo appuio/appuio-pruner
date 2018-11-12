@@ -55,5 +55,12 @@ objects:
                   image: ${IMAGE}
                   imagePullPolicy: IfNotPresent
                   args: ${{COMMAND}}
+                  resources:
+                    requests:
+                      cpu: 100m
+                      memory: 128Mi
+                    limits:
+                      cpu: 250m
+                      memory: 1Gi
               serviceAccountName: pruner
               restartPolicy: Never
