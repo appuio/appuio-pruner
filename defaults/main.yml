@@ -3,3 +3,21 @@ appuio_pruner_namespace: appuio-infra
 appuio_pruner_image: "docker.io/appuio/oc:{{ openshift_release }}"
 appuio_pruner_schedule: "@hourly"
 appuio_pruner_state: present
+
+appuio_pruner_cmd:
+  - /usr/bin/oc
+  - adm
+  - prune
+
+appuio_pruner_args:
+  builds:
+    - builds
+    - --orphans
+    - --confirm
+  deployments:
+    - deployments
+    - --orphans
+    - --confirm
+  images:
+    - deployments
+    - --confirm

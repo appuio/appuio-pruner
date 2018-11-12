@@ -1,0 +1,59 @@
+---
+kind: Template
+apiVersion: v1
+metadata:
+  name: appuio-pruner-job
+  annotations:
+    description: Install an APPUiO Pruner Job
+    version: '2.0.0'
+
+parameters:
+  - description: Kind of objects that are pruned, eg "images"
+    name: KIND
+    required: true
+
+  - description: Image to use for the pruner jobs
+    name: IMAGE
+    required: true
+
+  - description: Schedule to use for the cronjobs
+    name: SCHEDULE
+    value: "@hourly"
+
+  - description: Command to execute
+    name: COMMAND
+    required: true
+
+objects:
+
+  - apiVersion: batch/v1beta1
+    kind: CronJob
+    metadata:
+      name: prune-${KIND}
+      labels:
+        app: appuio-pruner
+    spec:
+      schedule: ${SCHEDULE}
+      failedJobsHistoryLimit: 3
+      successfulJobsHistoryLimit: 3
+      concurrencyPolicy: Forbid
+      startingDeadlineSeconds: 86400
+      jobTemplate:
+        spec:
+          activeDeadlineSeconds: 7200
+          completions: 1
+          # Don't retry failed executions
+          backoffLimit: 0
+          template:
+            metadata:
+              labels:
+                name: prune-${KIND}
+                app: appuio-pruner
+            spec:
+              containers:
+                - name: pruner
+                  image: ${IMAGE}
+                  imagePullPolicy: IfNotPresent
+                  args: ${{COMMAND}}
+              serviceAccountName: pruner
+              restartPolicy: Never
