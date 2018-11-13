@@ -35,7 +35,7 @@ objects:
     spec:
       schedule: ${SCHEDULE}
       failedJobsHistoryLimit: 3
-      successfulJobsHistoryLimit: 3
+      successfulJobsHistoryLimit: 1
       concurrencyPolicy: Forbid
       startingDeadlineSeconds: 86400
       jobTemplate:
