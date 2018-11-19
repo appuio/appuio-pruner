@@ -1,23 +1,6 @@
 ---
-- name: Create project for pruner
+- name: Create project for APPUiO Pruner
   openshift_project:
-    name: "{{ namespace }}"
+    name: "{{ appuio_pruner_namespace }}"
 
-- name: Instantiate pruner template
-  openshift_resource:
-    namespace: "{{ namespace }}"
-    template: "{{ role_path }}/files/pruner-template.yml"
-    app_name: appuio-pruner
-    arguments:
-      PRUNER_SOURCE: "{{ src | default(role_src) | default('https://github.com/appuio/appuio-pruner.git') }}"
-      PRUNER_VERSION: "{{ version | default(role_version) | default('master') }}"
-      BASE_IMAGE: "{{ ((deployment_type | default(openshift_deployment_type)) == 'origin') | ternary('centos:7', 'registry.access.redhat.com/rhel7') }}"
-      TIMEZONE: "{{ timezone | default(appuio_container_timezone) | default('UTC') }}"
-      OC_URL: "{{ oc_url | default('https://console.appuio.ch/console/extensions/clients/linux/oc') }}"
-
-- name: Configure permissions for pruner service account
-  openshift_policy:
-    cluster_roles:
-      - edit
-      - system:image-pruner
-    users: "system:serviceaccount:{{ namespace }}:default"
+- include_tasks: "pruner-{{ appuio_pruner_state }}.yml"

@@ -1,0 +1,87 @@
+---
+kind: Template
+apiVersion: v1
+metadata:
+  name: appuio-pruner
+  annotations:
+    description: Install the APPUiO Pruner
+    version: '2.0.0'
+
+parameters:
+  - description: Namespace the template is being deployed into
+    name: NAMESPACE
+    required: true
+
+objects:
+
+  - apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: pruner
+      labels:
+        app: appuio-pruner
+
+  - apiVersion: authorization.openshift.io/v1
+    kind: ClusterRole
+    metadata:
+      annotations:
+        openshift.io/reconcile-protect: "true"
+      labels:
+        app: appuio-pruner
+      name: appuio-pruner
+    rules:
+      - apiGroups:
+          - build.openshift.io
+        resources:
+          - buildconfigs
+        verbs:
+          - list
+      - apiGroups:
+          - build.openshift.io
+        resources:
+          - builds
+        verbs:
+          - list
+          - delete
+      - apiGroups:
+          - apps.openshift.io
+        resources:
+          - deploymentconfigs
+        verbs:
+          - list
+      - apiGroups: []
+        resources:
+          - replicationcontrollers
+        verbs:
+          - list
+          - delete
+
+  - apiVersion: authorization.openshift.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: appuio-pruner
+      labels:
+        app: appuio-pruner
+    roleRef:
+      name: appuio-pruner
+    subjects:
+      - kind: ServiceAccount
+        name: pruner
+        namespace: ${NAMESPACE}
+    userNames:
+      - 'system:serviceaccount:${NAMESPACE}:pruner'
+
+  - apiVersion: authorization.openshift.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: appuio-image-pruner
+      labels:
+        app: appuio-pruner
+    roleRef:
+      name: system:image-pruner
+    subjects:
+      - kind: ServiceAccount
+        name: pruner
+        namespace: ${NAMESPACE}
+    userNames:
+      - 'system:serviceaccount:${NAMESPACE}:pruner'

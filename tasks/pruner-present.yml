@@ -1,0 +1,53 @@
+---
+- name: Create temp directory for doing work in
+  tempfile:
+    state: directory
+  register: tempdir
+  changed_when: false
+
+- block:
+    - name: Copy templates
+      with_list:
+        - appuio-pruner.yml
+        - appuio-pruner-job.yml
+      copy:
+        src: "{{ item }}"
+        dest: "{{ tempdir.path }}/{{ item }}"
+      changed_when: false
+
+    - name: Apply pruner template
+      openshift_resource:
+        namespace: "{{ appuio_pruner_namespace }}"
+        template: "{{ tempdir.path }}/appuio-pruner.yml"
+        app_name: appuio-pruner
+        arguments:
+          NAMESPACE: "{{ appuio_pruner_namespace }}"
+
+    - name: Install cronjobs
+      with_list:
+        - builds
+        - deployments
+        - images
+      vars:
+        cmd: >-
+          {{
+            appuio_pruner_cmd +
+            appuio_pruner_args[item] +
+            vars['appuio_pruner_extra_args_' ~ item] | default([])
+          }}
+      openshift_resource:
+        namespace: "{{ appuio_pruner_namespace }}"
+        template: "{{ tempdir.path }}/appuio-pruner-job.yml"
+        app_name: appuio-pruner
+        arguments:
+          KIND: "{{ item }}"
+          IMAGE: "{{ appuio_pruner_image }}"
+          SCHEDULE: "{{ appuio_pruner_schedule }}"
+          COMMAND: "{{ cmd | to_json }}"
+
+  always:
+    - name: Delete temp directory
+      file:
+        path: "{{ tempdir.path }}"
+        state: absent
+      changed_when: false

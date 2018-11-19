@@ -1,54 +1,61 @@
-# appuio-pruner
-The APPUiO pruner prunes old builds, deployments and registry images from an OpenShift cluster.
+# APPUiO Pruner
 
-## Installation
+This repository contains an Ansible role to install the **APPUiO object
+pruner**, a set of 3 cronjobs which clean up old deployments, builds and images
+respectively.
 
-    oc new-project appuio-infra
-    oc new-app https://github.com/appuio/appuio-pruner
 
-If you are running an insecure registry, you need to specify the following environment variable:
+## What does it do?
 
-    oc new-app https://github.com/appuio/appuio-pruner -e INSECURE_REGISTRY=true
+It runs `oc adm prune XXX`.
 
-Give APPUiO Service Account the required permissions:
+## Service Account
 
-    oc adm policy add-cluster-role-to-user edit system:serviceaccount:appuio-infra:default
-    oc adm policy add-cluster-role-to-user system:image-pruner system:serviceaccount:appuio-infra:default
+The pruner jobs access the OpenShift API using the service account which the job
+was started with. The playbook will create the required service account, roles
+and role bindings for the jobs to do their job.
 
-## Ansible Role
+## Requirements
 
-This repository contains an Ansible role for automatic installation of the APPUiO pruner.
+* [OpenShift Container Platform][ocp] 3.9 or later, or
+* [OKD] 3.9 or later
 
-### Requirements
+## Role variables
 
-One of:
+| Name | Default value | Description |
+|------|---------------|-------------|
+| appuio_pruner_namespace | `appuio-infra` | Namespace to install the APPUiO pruner into |
+| appuio_pruner_image | `"docker.io/appuio/oc:{{ openshift_release }}"` | Image for the pruner job |
+| appuio_pruner_schedule | `@hourly` | Schedule in [Cron] format |
+| appuio_pruner_extra_args_<kind> | `[]` | List of extra args to add to a prune command. See below |
+| appuio_pruner_state | `present` | When set to `absent`, the pruner is removed from the cluster |
 
-* OpenShift Enterprise 3.2
-* OpenShift Container Platform 3.3 or later
-* OpenShift Origin M5 1.3 or later.
 
-### Role Variables
+### Customizing the `oc prune` commands
 
-| Name            | Default value                                                 | Description                                                                           |
-|-----------------|---------------------------------------------------------------|---------------------------------------------------------------------------------------|
-| src             | *role_src*, https://github.com/appuio/appuio-pruner.git       | Source repository of the APPUiO pruner                                                |
-| version         | *role_version*, master                                        | Version of the pruner to build, i.e. Git ref of repo above                            |
-| deployment_type | *openshift_deployment_type*, openshift-enterprise             | OpenShift deployment type (`openshift-enterprise` or `origin`), determines base image |
-| oc_url          | https://console.appuio.ch/console/extensions/clients/linux/oc | URL of OpenShift client (oc)                                                          |
-| namespace       | appuio-infra                                                  | namespace to install pruner into                                                      |
-| timezone        | *appuio_container_timezone*, UTC                              | Timezone of the container                                                             |
+You can use the `appuio_pruner_extra_args_<kind>` variable to add extra arguments to
+the commands being executed inside the containers. Example:
 
-In case of multiple default values the first defined value is used.
+```yaml
+appuio_pruner_extra_args_images:
+    - --force-insecure
+```
 
-### Dependencies
+## Dependencies
 
 * <https://github.com/appuio/ansible-module-openshift>
 
-### Example Usage
+
+## Example Usage
 
 `playbook.yml`:
 
 ```yaml
 roles:
-- role: appuio-pruner
+  - role: appuio-pruner
+    appuio_pruner_namespace: appuio-pruner
 ```
+
+[ocp]: https://www.openshift.com/
+[OKD]: https://www.okd.io/
+[Cron]: https://en.wikipedia.org/wiki/Cron
