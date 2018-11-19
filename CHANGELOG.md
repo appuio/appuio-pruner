@@ -10,5 +10,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Reimplementation based around CronJobs
 
-[Unreleased]: https://github.com/appuio/appuio-pruner/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/appuio/appuio-pruner/compare/v2.0.0...HEAD
 [2.0.0]: https://github.com/appuio/appuio-pruner/compare/v1.0.9...v2.0.0
