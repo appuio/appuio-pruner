@@ -55,6 +55,11 @@ objects:
         verbs:
           - list
           - delete
+      - apiGroups: []
+        resources:
+          - pods
+        verbs:
+          - delete
 
   - apiVersion: authorization.openshift.io/v1
     kind: ClusterRoleBinding
