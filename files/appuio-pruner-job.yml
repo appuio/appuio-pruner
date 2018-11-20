@@ -42,8 +42,7 @@ objects:
         spec:
           activeDeadlineSeconds: 7200
           completions: 1
-          # Don't retry failed executions
-          backoffLimit: 0
+          backoffLimit: 2
           template:
             metadata:
               labels:

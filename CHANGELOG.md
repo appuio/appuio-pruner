@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - Allow pruner to clean up deployment pods
+- Allow jobs to re-run on failures
 
 ## [2.0.0] - 2018-11-19
 ### Added
