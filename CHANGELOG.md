@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.2] - 2018-11-22
+### Fix
+- Actually prune images, not deployments in image pruner job
+
 ## [2.0.1] - 2018-11-20
 ### Changed
 - Allow pruner to clean up deployment pods

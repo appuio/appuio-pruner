@@ -19,5 +19,5 @@ appuio_pruner_args:
     - --orphans
     - --confirm
   images:
-    - deployments
+    - images
     - --confirm
