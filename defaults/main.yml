@@ -6,6 +6,7 @@ appuio_pruner_state: present
 
 appuio_pruner_cmd:
   - /usr/bin/oc
+  - --config=/dev/null
   - adm
   - prune
 
