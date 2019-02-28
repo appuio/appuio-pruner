@@ -53,7 +53,8 @@ objects:
                 - name: pruner
                   image: ${IMAGE}
                   imagePullPolicy: IfNotPresent
-                  args: ${{COMMAND}}
+                  command: ${{COMMAND}}
+                  args: []
                   resources:
                     requests:
                       cpu: 100m
