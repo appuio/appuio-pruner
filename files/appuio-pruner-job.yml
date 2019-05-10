@@ -49,6 +49,13 @@ objects:
                 name: prune-${KIND}
                 app: appuio-pruner
             spec:
+              tolerations:
+                - effect: NoSchedule
+                  key: autoscaled
+                  operator: Exists
+                - effect: NoSchedule
+                  key: appuio.ch/autoscaled
+                  operator: Exists
               containers:
                 - name: pruner
                   image: ${IMAGE}
@@ -61,6 +68,6 @@ objects:
                       memory: 128Mi
                     limits:
                       cpu: 250m
-                      memory: 1Gi
+                      memory: 2Gi
               serviceAccountName: pruner
               restartPolicy: Never
