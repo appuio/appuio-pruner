@@ -24,6 +24,22 @@ parameters:
     name: COMMAND
     required: true
 
+  - description: CPU request
+    name: CPU_REQUEST
+    required: true
+
+  - description: CPU limit
+    name: CPU_LIMIT
+    required: true
+
+  - description: MEMORY request
+    name: MEMORY_REQUEST
+    required: true
+
+  - description: MEMORY limit
+    name: MEMORY_LIMIT
+    required: true
+
 objects:
 
   - apiVersion: batch/v1beta1
@@ -64,10 +80,10 @@ objects:
                   args: []
                   resources:
                     requests:
-                      cpu: 100m
-                      memory: 128Mi
+                      cpu: ${{CPU_REQUEST}}
+                      memory: ${{MEMORY_REQUEST}}
                     limits:
-                      cpu: 250m
-                      memory: 2Gi
+                      cpu: ${{CPU_LIMIT}}
+                      memory: ${{MEMORY_LIMIT}}
               serviceAccountName: pruner
               restartPolicy: Never
