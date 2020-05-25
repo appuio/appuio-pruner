@@ -23,3 +23,8 @@ appuio_pruner_args:
   images:
     - images
     - --confirm
+
+appuio_pruner_cpu_request: 100m
+appuio_pruner_cpu_limit: 250m
+appuio_pruner_memory_request: 128Mi
+appuio_pruner_memory_limit: 2Gi

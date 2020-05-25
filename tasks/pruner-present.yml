@@ -44,6 +44,10 @@
           IMAGE: "{{ appuio_pruner_image }}"
           SCHEDULE: "{{ appuio_pruner_schedule }}"
           COMMAND: "{{ cmd | to_json }}"
+          CPU_REQUEST: "{{ appuio_pruner_cpu_request }}"
+          CPU_LIMIT: "{{ appuio_pruner_cpu_limit }}"
+          MEMORY_REQUEST: "{{ appuio_pruner_memory_request }}"
+          MEMORY_LIMIT: "{{ appuio_pruner_memory_limit }}"
 
   always:
     - name: Delete temp directory
