@@ -28,6 +28,7 @@
         - builds
         - deployments
         - images
+      when: item not in appuio_pruner_disabled_jobs
       vars:
         cmd: >-
           {{
@@ -48,6 +49,15 @@
           CPU_LIMIT: "{{ appuio_pruner_cpu_limit }}"
           MEMORY_REQUEST: "{{ appuio_pruner_memory_request }}"
           MEMORY_LIMIT: "{{ appuio_pruner_memory_limit }}"
+
+    - name: Remove disabled cronjobs
+      with_list: "{{ appuio_pruner_disabled_jobs }}"
+      command: >-
+        oc -n {{ appuio_pruner_namespace | quote }}
+        delete cronjob "prune-{{ item }}"
+        --ignore-not-found
+      register: r_remove_cronjob
+      changed_when: r_remove_cronjob.stdout == "cronjob.batch \"prune-{{ item }}\" deleted"
 
   always:
     - name: Delete temp directory
