@@ -51,13 +51,13 @@
           MEMORY_LIMIT: "{{ appuio_pruner_memory_limit }}"
 
     - name: Remove disabled cronjobs
+      ignore_errors: true
       with_list: "{{ appuio_pruner_disabled_jobs }}"
       command: >-
         oc -n {{ appuio_pruner_namespace | quote }}
         delete cronjob "prune-{{ item }}"
-        --ignore-not-found
       register: r_remove_cronjob
-      changed_when: r_remove_cronjob.stdout == "cronjob.batch \"prune-{{ item }}\" deleted"
+      changed_when: r_remove_cronjob.rc == 0
 
   always:
     - name: Delete temp directory
