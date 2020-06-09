@@ -23,11 +23,15 @@
         arguments:
           NAMESPACE: "{{ appuio_pruner_namespace }}"
 
+    - name: Validate appuio_pruner_disabled_jobs
+      with_list: "{{ appuio_pruner_disabled_jobs }}"
+      assert:
+        that:  item in appuio_pruner_jobs
+        msg: "'{{ item }}' is not a valid job. Valid jobs are '{{ appuio_pruner_jobs | join(', ') }}'."
+
     - name: Install cronjobs
-      with_list:
-        - builds
-        - deployments
-        - images
+      with_list: "{{ appuio_pruner_jobs }}"
+      when: item not in appuio_pruner_disabled_jobs
       vars:
         cmd: >-
           {{
@@ -49,6 +53,16 @@
           MEMORY_REQUEST: "{{ appuio_pruner_memory_request }}"
           MEMORY_LIMIT: "{{ appuio_pruner_memory_limit }}"
 
+    - name: Remove disabled cronjobs
+      ignore_errors: true
+      with_list: "{{ appuio_pruner_disabled_jobs }}"
+      command: >-
+        oc -n {{ appuio_pruner_namespace | quote }}
+        delete cronjob "prune-{{ item }}"
+      register: r_remove_cronjob
+      changed_when: r_remove_cronjob.rc == 0
+  vars:
+    appuio_pruner_jobs: [builds, deployments, images]
   always:
     - name: Delete temp directory
       file:

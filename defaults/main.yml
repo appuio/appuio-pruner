@@ -11,6 +11,8 @@ appuio_pruner_cmd:
   - adm
   - prune
 
+appuio_pruner_disabled_jobs: []
+
 appuio_pruner_args:
   builds:
     - builds

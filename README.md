@@ -24,9 +24,10 @@ and role bindings for the jobs to do their job.
 
 | Name | Default value | Description |
 |------|---------------|-------------|
-| appuio_pruner_namespace | `appuio-infra` | Namespace to install the APPUiO pruner into |
+| appuio_pruner_namespace | `appuio-pruner` | Namespace to install the APPUiO pruner into |
 | appuio_pruner_image | `"docker.io/appuio/oc:{{ openshift_release }}"` | Image for the pruner job |
 | appuio_pruner_schedule | `@hourly` | Schedule in [Cron] format |
+| appuio_pruner_disabled_jobs | `[]` | List of pruner jobs to be disabled |
 | appuio_pruner_extra_args_<kind> | `[]` | List of extra args to add to a prune command. See below |
 | appuio_pruner_state | `present` | When set to `absent`, the pruner is removed from the cluster |
 
